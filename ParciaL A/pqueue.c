@@ -123,6 +123,7 @@ pqueue pqueue_enqueue(pqueue q, pqueue_elem e, unsigned int priority) {
         rec->next = new_node;
         }
     }
+    q->size++;
     return q;
 }
 
