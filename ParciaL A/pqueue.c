@@ -97,7 +97,7 @@ bool pqueue_is_empty(pqueue q) {
     return is_empty;
 }
 
-pqueue_elem pqueue_pick(pqueue q) {
+pqueue_elem pqueue_peek(pqueue q) {
     assert(invrep(q) && !pqueue_is_empty(q));
 
     pqueue_elem elem;
@@ -107,7 +107,7 @@ pqueue_elem pqueue_pick(pqueue q) {
     return elem;
 }
 
-unsigned int pqueue_pick_priority(pqueue q) {
+unsigned int pqueue_peek_priority(pqueue q) {
     assert(invrep(q) && !pqueue_is_empty(q));
 
     pqueue_elem priority;
