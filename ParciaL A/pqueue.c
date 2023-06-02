@@ -32,38 +32,96 @@ static struct s_node * destroy_node(struct s_node *node) {
     assert(node == NULL);
     return node;
 }
-
+// 1 2 3 5 4
+/*
+static bool invrep(pqueue q) {
+  struct s_node *aux = q->first; //creo un nodo auxiliar para simular el first.
+    bool res = true; //creo una variable booleana para devolver.
+    unsigned int prio = q->first->priority; //creo una variable para guardar la prioridad del primer nodo.
+    while (aux->next != NULL && res) //recorro la cola hasta llegar al ultimo nodo.
+    {
+        if (prio > aux->next->priority){ //si la prioridad del nodo actual es mayor a la del siguiente, devuelvo false.
+            res = false;
+        }
+        prio = aux->next->priority;
+        aux = aux->next; //avanzo al siguiente nodo.
+    }
+    return res; //devuelvo el resultado.
+}*/
+// 1 2 3 5 4 
 
 static bool invrep(pqueue q) {
-    
-    
-    
-    
-    return true;
+    struct s_node *aux = q->first; //creo un nodo auxiliar para simular el first.
+    bool res = true; //creo una variable booleana para devolver.
+    if(q->first!=NULL){
+        unsigned int prio = q->first->priority; //creo una variable para guardar la prioridad del primer nodo.
+        while (aux->next != NULL && res) //recorro la cola hasta llegar al ultimo nodo.
+        {
+            if (prio > aux->next->priority){ //si la prioridad del nodo actual es mayor a la del siguiente, devuelvo false.
+                res = false;
+            }
+        prio = aux->next->priority;
+        aux = aux->next; //avanzo al siguiente nodo.
+        }
+    }
+    return res; //devuelvo el resultado.
 }
+
 
 pqueue pqueue_empty(void) {
     pqueue q=NULL;
     q = malloc(sizeof(pqueue));
     q->size = 0;
     q->first = NULL;
-    q->first->priority = 0;
+   // q->first->priority = 0;
     return q;
 }
 
 pqueue pqueue_enqueue(pqueue q, pqueue_elem e, unsigned int priority) {
     assert(invrep(q));
     struct s_node *new_node = create_node(e, priority);
+    bool b = true;
+
+    //primer if: cuando el primer nodo sea igual a NULL
     if(q->first == NULL){
-        q->first = new_node;
+        q->first = new_node;// le asigno el nuevo nodo
     }
     else{
-        struct s_node *aux= NULL;
-        aux = q->first;
-        while(aux->next!=NULL){
-            aux = aux->next;
+        struct s_node *aux= NULL, *rec= NULL;
+        rec = q->first;
+        aux = rec;
+
+        //segundo if: cuando la P del nuevo nodo sea menor que la del primer nodo
+        if(new_node->priority < q->first->priority){//chequea prioridad
+        q->first = new_node;//el primero sera el nuevo nodo
+        q->first->next = aux;//el segundo sera el antiguo primero
+        free(aux);
         }
-    aux->next = new_node;
+
+        //while para recorrer la cola, esta parado en 
+        while(rec->next!=NULL && b){//mientras que el siguiente no sea null
+            
+            //tercer if: chequea que la prioridad del que sigue de first, no sea menor que el primero;
+            if(new_node->priority < rec->next->priority){
+                b = false;//false para salir, entonces se quedara en la 2da pos
+                //haremos el cambio mas adelante
+            }
+
+            //cuarto if: si el nn tiene mayor prioridad que el 2,
+            if(new_node->priority > rec->next->priority){
+                rec = rec->next;//pasamos al siguiente, para que vuelva a comparar
+            }
+        }
+        //quinto if: esto es para meter el new node en la pos que va
+        if(b==false){
+        aux = rec->next;
+        rec->next = new_node;
+        new_node->next = aux;
+        free(aux); free(rec);
+        }
+        else{
+        rec->next = new_node;
+        }
     }
     return q;
 }
@@ -94,7 +152,7 @@ unsigned int pqueue_size(pqueue q) {
 }
 
 pqueue pqueue_dequeue(pqueue q) {
-    assert(invrep(q) && !queue_is_empty(q));
+    assert(invrep(q) && !pqueue_is_empty(q));
     struct s_node * killme=q->first;
     q->first = q->first->next;
     killme = destroy_node(killme);
